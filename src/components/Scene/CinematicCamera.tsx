@@ -81,6 +81,192 @@ function interpolateKeyframes07(p: number) {
   return { pos: new THREE.Vector3(...last.pos), target: new THREE.Vector3(...last.target) };
 }
 
+const SCN09_KEYFRAMES = [
+  { p: 0.0,  pos: [0.0, 0.25, 0.6] as [number, number, number],   target: [0.0, 0.2, -0.6] as [number, number, number] },    // Stage 1 Start: Low horizon, seed in frame
+  { p: 0.25, pos: [0.0, 0.3, 0.5] as [number, number, number],    target: [0.05, 0.15, -0.3] as [number, number, number] },  // Stage 1 End / Stage 2 Start: Sky builds, clouds appear
+  { p: 0.45, pos: [0.13, 0.18, -0.06] as [number, number, number], target: [0.2, 0.08, -0.2] as [number, number, number] },   // Stage 2 End / Stage 3 Start: Extreme zoom to rock
+  { p: 0.55, pos: [0.13, 0.18, -0.06] as [number, number, number], target: [0.2, 0.08, -0.2] as [number, number, number] },   // Stage 3 Hold: First droplet forms & impacts
+  { p: 0.80, pos: [-0.25, 0.28, 0.15] as [number, number, number],  target: [0.0, 0.02, -0.3] as [number, number, number] },  // Stage 4: Rainfall details, panning wet soil
+  { p: 0.96, pos: [0.0, 14.0, 6.0] as [number, number, number],     target: [0.0, 0.5, -12.0] as [number, number, number] },  // Stage 5 End: High rise to show rivers & storms
+  { p: 1.0,  pos: [0.0, 16.0, 5.0] as [number, number, number],     target: [0.0, 0.5, -18.0] as [number, number, number] }   // Fade out hold
+];
+
+function interpolateKeyframes09(p: number) {
+  for (let i = 0; i < SCN09_KEYFRAMES.length - 1; i++) {
+    const k1 = SCN09_KEYFRAMES[i];
+    const k2 = SCN09_KEYFRAMES[i+1];
+    if (p >= k1.p && p <= k2.p) {
+      const t = (p - k1.p) / (k2.p - k1.p);
+      const easeT = t * t * (3.0 - 2.0 * t);
+      
+      const pos = new THREE.Vector3(
+        THREE.MathUtils.lerp(k1.pos[0], k2.pos[0], easeT),
+        THREE.MathUtils.lerp(k1.pos[1], k2.pos[1], easeT),
+        THREE.MathUtils.lerp(k1.pos[2], k2.pos[2], easeT)
+      );
+      
+      const target = new THREE.Vector3(
+        THREE.MathUtils.lerp(k1.target[0], k2.target[0], easeT),
+        THREE.MathUtils.lerp(k1.target[1], k2.target[1], easeT),
+        THREE.MathUtils.lerp(k1.target[2], k2.target[2], easeT)
+      );
+      
+      return { pos, target };
+    }
+  }
+  const last = SCN09_KEYFRAMES[SCN09_KEYFRAMES.length - 1];
+  return { pos: new THREE.Vector3(...last.pos), target: new THREE.Vector3(...last.target) };
+}
+
+const SCN10_KEYFRAMES = [
+  { p: 0.0,  pos: [0.0, 0.25, 0.6] as [number, number, number],    target: [0.0, 0.05, -0.4] as [number, number, number] },    // Stage 1 Start: Near the ground, sprout is green
+  { p: 0.20, pos: [0.1, 0.28, 0.3] as [number, number, number],    target: [0.1, 0.05, -0.4] as [number, number, number] },    // Stage 1 End / Stage 2 Start: Rivers form, grass spreads
+  { p: 0.40, pos: [-0.2, 0.35, 0.2] as [number, number, number],   target: [0.0, 0.05, -0.3] as [number, number, number] },    // Stage 2 End / Stage 3 Start: Grass spreads to hills
+  { p: 0.60, pos: [0.2, 0.4, 0.1] as [number, number, number],     target: [-0.1, 0.05, -0.5] as [number, number, number] },   // Stage 3 End / Stage 4 Start: Forests appear, sky blue
+  { p: 0.72, pos: [0.0, 1.0, -0.1] as [number, number, number],     target: [0.0, 0.05, -0.8] as [number, number, number] },   // Stage 4 End / Stage 5 Start: Lift-off initiates
+  { p: 0.88, pos: [0.0, 56.0, -1142.0] as [number, number, number], target: [0.0, 48.0, -1200.0] as [number, number, number] },  // Stage 5 End: Reaching planet curvature high altitude
+  { p: 0.95, pos: [0.0, 10.0, -950.0] as [number, number, number],  target: [0.0, 0.0, -1200.0] as [number, number, number] },  // Hero Shot: Glowing blue-green Mars in space
+  { p: 1.0,  pos: [0.0, 5.0, -940.0] as [number, number, number],   target: [0.0, 0.0, -1200.0] as [number, number, number] }   // Transition Out: Slow orbital pivot, civ lights twinkle
+];
+
+function interpolateKeyframes10(p: number) {
+  for (let i = 0; i < SCN10_KEYFRAMES.length - 1; i++) {
+    const k1 = SCN10_KEYFRAMES[i];
+    const k2 = SCN10_KEYFRAMES[i+1];
+    if (p >= k1.p && p <= k2.p) {
+      const t = (p - k1.p) / (k2.p - k1.p);
+      const easeT = t * t * (3.0 - 2.0 * t);
+      
+      const pos = new THREE.Vector3(
+        THREE.MathUtils.lerp(k1.pos[0], k2.pos[0], easeT),
+        THREE.MathUtils.lerp(k1.pos[1], k2.pos[1], easeT),
+        THREE.MathUtils.lerp(k1.pos[2], k2.pos[2], easeT)
+      );
+      
+      const target = new THREE.Vector3(
+        THREE.MathUtils.lerp(k1.target[0], k2.target[0], easeT),
+        THREE.MathUtils.lerp(k1.target[1], k2.target[1], easeT),
+        THREE.MathUtils.lerp(k1.target[2], k2.target[2], easeT)
+      );
+      
+      return { pos, target };
+    }
+  }
+  const last = SCN10_KEYFRAMES[SCN10_KEYFRAMES.length - 1];
+  return { pos: new THREE.Vector3(...last.pos), target: new THREE.Vector3(...last.target) };
+}
+
+const SCN11_KEYFRAMES = [
+  { p: 0.0,  pos: [0.0, 5.0, -940.0] as [number, number, number],   target: [0.0, 0.0, -1200.0] as [number, number, number] },    // Stage 1 Start: Orbital view, same as SCN_10 end
+  { p: 0.25, pos: [-0.3, 4.8, -942.0] as [number, number, number],  target: [0.0, 0.0, -1200.0] as [number, number, number] },   // Stage 1 End / Stage 2 Start: Sun sets, dusk begins
+  { p: 0.50, pos: [-0.6, 4.6, -944.0] as [number, number, number],  target: [0.0, 0.0, -1200.0] as [number, number, number] },   // Stage 2 End / Stage 3 Start: Dark night, first city light
+  { p: 0.75, pos: [-0.8, 4.5, -946.0] as [number, number, number],  target: [0.0, 0.0, -1200.0] as [number, number, number] },   // Stage 3 End / Stage 4 Start: Multiple city clusters grow
+  { p: 0.90, pos: [-0.9, 4.5, -948.0] as [number, number, number],  target: [0.0, 0.0, -1200.0] as [number, number, number] },   // Stage 4 End / Stage 5 Start: Network grid connects
+  { p: 0.98, pos: [-1.2, 5.2, -942.0] as [number, number, number],  target: [8.5, 2.5, -1200.0] as [number, number, number] },   // Stage 5 End / Stage 6 Start: Pan camera to reveal Earth
+  { p: 1.0,  pos: [-1.2, 5.2, -942.0] as [number, number, number],  target: [8.5, 2.5, -1200.0] as [number, number, number] }    // Hero: Mars and Earth together in space, fade out
+];
+
+function interpolateKeyframes11(p: number) {
+  for (let i = 0; i < SCN11_KEYFRAMES.length - 1; i++) {
+    const k1 = SCN11_KEYFRAMES[i];
+    const k2 = SCN11_KEYFRAMES[i+1];
+    if (p >= k1.p && p <= k2.p) {
+      const t = (p - k1.p) / (k2.p - k1.p);
+      const easeT = t * t * (3.0 - 2.0 * t);
+      
+      const pos = new THREE.Vector3(
+        THREE.MathUtils.lerp(k1.pos[0], k2.pos[0], easeT),
+        THREE.MathUtils.lerp(k1.pos[1], k2.pos[1], easeT),
+        THREE.MathUtils.lerp(k1.pos[2], k2.pos[2], easeT)
+      );
+      
+      const target = new THREE.Vector3(
+        THREE.MathUtils.lerp(k1.target[0], k2.target[0], easeT),
+        THREE.MathUtils.lerp(k1.target[1], k2.target[1], easeT),
+        THREE.MathUtils.lerp(k1.target[2], k2.target[2], easeT)
+      );
+      
+      return { pos, target };
+    }
+  }
+  const last = SCN11_KEYFRAMES[SCN11_KEYFRAMES.length - 1];
+  return { pos: new THREE.Vector3(...last.pos), target: new THREE.Vector3(...last.target) };
+}
+
+const SCN12_KEYFRAMES = [
+  { p: 0.0,  pos: [-14.5, 1.2, -1140.0] as [number, number, number], target: [-25.0, 0.0, -1200.0] as [number, number, number] }, // Stage 1 Start: Close to Mars
+  { p: 0.20, pos: [-13.0, 1.0, -1130.0] as [number, number, number], target: [-25.0, 0.0, -1200.0] as [number, number, number] }, // Stage 1 End / Stage 2 Start: Drift back
+  { p: 0.45, pos: [0.0, 0.0, -1115.0] as [number, number, number],    target: [0.0, 0.0, -1200.0] as [number, number, number] },   // Stage 2 End / Stage 3 Start: Symmetrical balance
+  { p: 0.60, pos: [0.0, 0.0, -1115.0] as [number, number, number],    target: [0.0, 0.0, -1200.0] as [number, number, number] },   // Stage 3 Hold: Reveal composition
+  { p: 0.80, pos: [0.0, 0.0, -1115.0] as [number, number, number],    target: [0.0, 0.0, -1200.0] as [number, number, number] },   // Stage 4 Hold: Synchronized rotation
+  { p: 0.95, pos: [0.0, 0.0, -1115.0] as [number, number, number],    target: [0.0, 0.0, -1200.0] as [number, number, number] },   // Stage 5 Hold: Metaphorical filaments
+  { p: 1.0,  pos: [0.0, 0.0, -1222.0] as [number, number, number],    target: [0.0, 0.0, -1250.0] as [number, number, number] }    // Transition Out: Zoom past planets into deep space
+];
+
+function interpolateKeyframes12(p: number) {
+  for (let i = 0; i < SCN12_KEYFRAMES.length - 1; i++) {
+    const k1 = SCN12_KEYFRAMES[i];
+    const k2 = SCN12_KEYFRAMES[i+1];
+    if (p >= k1.p && p <= k2.p) {
+      const t = (p - k1.p) / (k2.p - k1.p);
+      const easeT = t * t * (3.0 - 2.0 * t);
+      
+      const pos = new THREE.Vector3(
+        THREE.MathUtils.lerp(k1.pos[0], k2.pos[0], easeT),
+        THREE.MathUtils.lerp(k1.pos[1], k2.pos[1], easeT),
+        THREE.MathUtils.lerp(k1.pos[2], k2.pos[2], easeT)
+      );
+      
+      const target = new THREE.Vector3(
+        THREE.MathUtils.lerp(k1.target[0], k2.target[0], easeT),
+        THREE.MathUtils.lerp(k1.target[1], k2.target[1], easeT),
+        THREE.MathUtils.lerp(k1.target[2], k2.target[2], easeT)
+      );
+      
+      return { pos, target };
+    }
+  }
+  const last = SCN12_KEYFRAMES[SCN12_KEYFRAMES.length - 1];
+  return { pos: new THREE.Vector3(...last.pos), target: new THREE.Vector3(...last.target) };
+}
+
+const SCN13_KEYFRAMES = [
+  { p: 0.0,  pos: [0.0, 0.0, -1120.0] as [number, number, number],    target: [0.0, 0.0, -1200.0] as [number, number, number] }, // Stage 1 Start: Centered
+  { p: 0.22, pos: [0.0, 0.0, -950.0] as [number, number, number],     target: [0.0, 0.0, -1200.0] as [number, number, number] },  // Stage 1 End / Stage 2 Start: Drift back, planets fade
+  { p: 0.45, pos: [0.0, 2.0, -850.0] as [number, number, number],     target: [12.0, 8.0, -1300.0] as [number, number, number] }, // Stage 2 End / Stage 4 Start: Cosmic ocean drift
+  { p: 0.70, pos: [0.0, 0.0, -450.0] as [number, number, number],     target: [0.0, 0.0, -500.0] as [number, number, number] },   // Stage 4 End / Stage 5 Start: Star approach
+  { p: 0.83, pos: [0.0, 0.0, -499.5] as [number, number, number],     target: [0.0, 0.0, -500.0] as [number, number, number] },   // Stage 5 End / Stage 6 Start: Plunge into star center
+  { p: 0.86, pos: [0.0, 0.0, -95.0] as [number, number, number],      target: [0.0, 0.0, -100.0] as [number, number, number] },    // Stage 6 Reveal: Close up iris reveal
+  { p: 1.0,  pos: [0.0, 0.0, -78.0] as [number, number, number],      target: [0.0, 0.0, -100.0] as [number, number, number] }    // Climax hold & pullback
+];
+
+function interpolateKeyframes13(p: number) {
+  for (let i = 0; i < SCN13_KEYFRAMES.length - 1; i++) {
+    const k1 = SCN13_KEYFRAMES[i];
+    const k2 = SCN13_KEYFRAMES[i+1];
+    if (p >= k1.p && p <= k2.p) {
+      const t = (p - k1.p) / (k2.p - k1.p);
+      const easeT = t * t * (3.0 - 2.0 * t);
+      
+      const pos = new THREE.Vector3(
+        THREE.MathUtils.lerp(k1.pos[0], k2.pos[0], easeT),
+        THREE.MathUtils.lerp(k1.pos[1], k2.pos[1], easeT),
+        THREE.MathUtils.lerp(k1.pos[2], k2.pos[2], easeT)
+      );
+      
+      const target = new THREE.Vector3(
+        THREE.MathUtils.lerp(k1.target[0], k2.target[0], easeT),
+        THREE.MathUtils.lerp(k1.target[1], k2.target[1], easeT),
+        THREE.MathUtils.lerp(k1.target[2], k2.target[2], easeT)
+      );
+      
+      return { pos, target };
+    }
+  }
+  const last = SCN13_KEYFRAMES[SCN13_KEYFRAMES.length - 1];
+  return { pos: new THREE.Vector3(...last.pos), target: new THREE.Vector3(...last.target) };
+}
+
 export default function CinematicCamera() {
   const { camera } = useThree();
   
@@ -93,6 +279,11 @@ export default function CinematicCamera() {
   const transitProgress = useStore((state) => state.transitProgress);
   const approachProgress = useStore((state) => state.approachProgress);
   const footfallProgress = useStore((state) => state.footfallProgress);
+  const rainProgress = useStore((state) => state.rainProgress);
+  const awakeningProgress = useStore((state) => state.awakeningProgress);
+  const lightsProgress = useStore((state) => state.lightsProgress);
+  const reflectionProgress = useStore((state) => state.reflectionProgress);
+  const loopProgress = useStore((state) => state.loopProgress);
   const setCurrentScene = useStore((state) => state.setCurrentScene);
   
   useEffect(() => {
@@ -284,6 +475,41 @@ export default function CinematicCamera() {
     // In SCN_07 (First Footfall), interpolate camera position and target based on landing progress
     if (currentScene === 'SCN_07') {
       const { pos, target } = interpolateKeyframes07(footfallProgress);
+      camera.position.lerp(pos, 0.08);
+      targetRef.current.lerp(target, 0.08);
+    }
+
+    // In SCN_09 (The First Rain), interpolate camera position and target based on rain progress
+    if (currentScene === 'SCN_09') {
+      const { pos, target } = interpolateKeyframes09(rainProgress);
+      camera.position.lerp(pos, 0.08);
+      targetRef.current.lerp(target, 0.08);
+    }
+
+    // In SCN_10 (Azure Awakening), interpolate camera position and target based on awakening progress
+    if (currentScene === 'SCN_10') {
+      const { pos, target } = interpolateKeyframes10(awakeningProgress);
+      camera.position.lerp(pos, 0.08);
+      targetRef.current.lerp(target, 0.08);
+    }
+
+    // In SCN_11 (First Lights), interpolate camera position and target based on lights progress
+    if (currentScene === 'SCN_11') {
+      const { pos, target } = interpolateKeyframes11(lightsProgress);
+      camera.position.lerp(pos, 0.08);
+      targetRef.current.lerp(target, 0.08);
+    }
+
+    // In SCN_12 (Twin Reflection), interpolate camera position and target based on reflection progress
+    if (currentScene === 'SCN_12') {
+      const { pos, target } = interpolateKeyframes12(reflectionProgress);
+      camera.position.lerp(pos, 0.08);
+      targetRef.current.lerp(target, 0.08);
+    }
+
+    // In SCN_13 (The Loop), interpolate camera position and target based on loop progress
+    if (currentScene === 'SCN_13') {
+      const { pos, target } = interpolateKeyframes13(loopProgress);
       camera.position.lerp(pos, 0.08);
       targetRef.current.lerp(target, 0.08);
     }

@@ -13,6 +13,11 @@ import CinematicCamera from './CinematicCamera';
 import { SpaceDistortion } from './SpaceDistortion';
 import MarsApproach from './MarsApproach';
 import MarsSurface from './MarsSurface';
+import MarsRain from './MarsRain';
+import MarsAwakening from './MarsAwakening';
+import MarsLights from './MarsLights';
+import MarsReflection from './MarsReflection';
+import MarsLoop from './MarsLoop';
 
 // Vector representing the Sun's position in deep space
 const SUN_POSITION = new THREE.Vector3(-25, 5.8, -25);
@@ -343,7 +348,7 @@ export default function CanvasContainer() {
   const currentScene = useStore((state) => state.currentScene);
 
   // Instantly collapse/hide the Earth System on Snap
-  const hideEarthSystem = hingePhase === 'snapped' || currentScene === 'SCN_05' || currentScene === 'SCN_06' || currentScene === 'SCN_07';
+  const hideEarthSystem = hingePhase === 'snapped' || currentScene === 'SCN_05' || currentScene === 'SCN_06' || currentScene === 'SCN_07' || currentScene === 'SCN_09' || currentScene === 'SCN_10' || currentScene === 'SCN_11' || currentScene === 'SCN_12' || currentScene === 'SCN_13';
 
   return (
     <div className="canvas-wrapper">
@@ -430,6 +435,21 @@ export default function CanvasContainer() {
 
           {/* Detailed Mars Landing site surface for SCN_07 */}
           <MarsSurface />
+
+          {/* Detailed Mars First Rain scene for SCN_09 */}
+          <MarsRain />
+
+          {/* Detailed Mars Awakening scene for SCN_10 */}
+          <MarsAwakening />
+
+          {/* Detailed Mars First Lights scene for SCN_11 */}
+          <MarsLights />
+
+          {/* Detailed Mars Twin Reflection scene for SCN_12 */}
+          <MarsReflection />
+
+          {/* Detailed Mars Loop scene for SCN_13 */}
+          <MarsLoop />
         </Suspense>
 
         {/* Custom GSAP camera sequence linked to document scroll */}

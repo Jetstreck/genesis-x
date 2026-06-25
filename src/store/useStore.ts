@@ -10,12 +10,18 @@ interface EarthState {
   longitude: number;
   timelineProgress: number;
   audioState: 'ambience' | 'vacuum-drop' | 'vacuum';
-  currentScene: 'SCN_02' | 'SCN_03' | 'SCN_04' | 'SCN_05' | 'SCN_06' | 'SCN_07';
+  currentScene: 'SCN_02' | 'SCN_03' | 'SCN_04' | 'SCN_05' | 'SCN_06' | 'SCN_07' | 'SCN_09' | 'SCN_10' | 'SCN_11' | 'SCN_12' | 'SCN_13';
   hingePhase: 'idle' | 'dragging' | 'holding' | 'snapped';
   dragProgress: number;
   transitProgress: number;
   approachProgress: number;
   footfallProgress: number;
+  rainProgress: number;
+  awakeningProgress: number;
+  lightsProgress: number;
+  reflectionProgress: number;
+  mousePosition: { x: number; y: number };
+  loopProgress: number;
   
   // Actions
   setRotationSpeed: (speed: number) => void;
@@ -26,12 +32,18 @@ interface EarthState {
   updateCoordinates: (lat: number, lng: number) => void;
   setTimelineProgress: (progress: number) => void;
   setAudioState: (state: 'ambience' | 'vacuum-drop' | 'vacuum') => void;
-  setCurrentScene: (scene: 'SCN_02' | 'SCN_03' | 'SCN_04' | 'SCN_05' | 'SCN_06' | 'SCN_07') => void;
+  setCurrentScene: (scene: 'SCN_02' | 'SCN_03' | 'SCN_04' | 'SCN_05' | 'SCN_06' | 'SCN_07' | 'SCN_09' | 'SCN_10' | 'SCN_11' | 'SCN_12' | 'SCN_13') => void;
   setHingePhase: (phase: 'idle' | 'dragging' | 'holding' | 'snapped') => void;
   setDragProgress: (progress: number) => void;
   setTransitProgress: (progress: number) => void;
   setApproachProgress: (progress: number) => void;
   setFootfallProgress: (progress: number) => void;
+  setRainProgress: (progress: number) => void;
+  setAwakeningProgress: (progress: number) => void;
+  setLightsProgress: (progress: number) => void;
+  setReflectionProgress: (progress: number) => void;
+  setMousePosition: (pos: { x: number; y: number }) => void;
+  setLoopProgress: (progress: number) => void;
 }
 
 export const useStore = create<EarthState>((set) => ({
@@ -50,6 +62,12 @@ export const useStore = create<EarthState>((set) => ({
   transitProgress: 0,
   approachProgress: 0,
   footfallProgress: 0,
+  rainProgress: 0,
+  awakeningProgress: 0,
+  lightsProgress: 0,
+  reflectionProgress: 0,
+  mousePosition: { x: 0, y: 0 },
+  loopProgress: 0,
 
   setRotationSpeed: (speed) => set({ rotationSpeed: speed }),
   toggleRotating: () => set((state) => ({ isRotating: !state.isRotating })),
@@ -65,4 +83,10 @@ export const useStore = create<EarthState>((set) => ({
   setTransitProgress: (progress) => set({ transitProgress: progress }),
   setApproachProgress: (progress) => set({ approachProgress: progress }),
   setFootfallProgress: (progress) => set({ footfallProgress: progress }),
+  setRainProgress: (progress) => set({ rainProgress: progress }),
+  setAwakeningProgress: (progress) => set({ awakeningProgress: progress }),
+  setLightsProgress: (progress) => set({ lightsProgress: progress }),
+  setReflectionProgress: (progress) => set({ reflectionProgress: progress }),
+  setMousePosition: (pos) => set({ mousePosition: pos }),
+  setLoopProgress: (progress) => set({ loopProgress: progress }),
 }));

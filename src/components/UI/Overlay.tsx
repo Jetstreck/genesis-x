@@ -6,6 +6,11 @@ import useAudio from '@/hooks/useAudio';
 import { shepardToneSynth } from '@/lib/shepardSynth';
 import { marsSynth } from '@/lib/marsSynth';
 import { footfallSynth } from '@/lib/footfallSynth';
+import { rainSynth } from '@/lib/rainSynth';
+import { awakeningSynth } from '@/lib/awakeningSynth';
+import { lightsSynth } from '@/lib/lightsSynth';
+import { reflectionSynth } from '@/lib/reflectionSynth';
+import { loopSynth } from '@/lib/loopSynth';
 
 export default function Overlay() {
   const [scrollY, setScrollY] = useState(0);
@@ -24,6 +29,17 @@ export default function Overlay() {
   const setApproachProgress = useStore((state) => state.setApproachProgress);
   const footfallProgress = useStore((state) => state.footfallProgress);
   const setFootfallProgress = useStore((state) => state.setFootfallProgress);
+  const rainProgress = useStore((state) => state.rainProgress);
+  const setRainProgress = useStore((state) => state.setRainProgress);
+  const awakeningProgress = useStore((state) => state.awakeningProgress);
+  const setAwakeningProgress = useStore((state) => state.setAwakeningProgress);
+  const lightsProgress = useStore((state) => state.lightsProgress);
+  const setLightsProgress = useStore((state) => state.setLightsProgress);
+  const reflectionProgress = useStore((state) => state.reflectionProgress);
+  const setReflectionProgress = useStore((state) => state.setReflectionProgress);
+  const setMousePosition = useStore((state) => state.setMousePosition);
+  const loopProgress = useStore((state) => state.loopProgress);
+  const setLoopProgress = useStore((state) => state.setLoopProgress);
 
   // Invoke default ambient audio system (manages SCN_02/SCN_03 phases)
   useAudio();
@@ -62,6 +78,41 @@ export default function Overlay() {
       } else {
         document.body.style.overflow = 'auto';
       }
+    } else if (currentScene === 'SCN_09') {
+      // Allow scroll in SCN_09 until the scene ends (rainProgress = 1.0)
+      if (rainProgress >= 0.99) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = 'auto';
+      }
+    } else if (currentScene === 'SCN_10') {
+      // Allow scroll in SCN_10 until the scene ends (awakeningProgress = 1.0)
+      if (awakeningProgress >= 0.99) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = 'auto';
+      }
+    } else if (currentScene === 'SCN_11') {
+      // Allow scroll in SCN_11 until the scene ends (lightsProgress = 1.0)
+      if (lightsProgress >= 0.99) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = 'auto';
+      }
+    } else if (currentScene === 'SCN_12') {
+      // Allow scroll in SCN_12 until the scene ends (reflectionProgress = 1.0)
+      if (reflectionProgress >= 0.99) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = 'auto';
+      }
+    } else if (currentScene === 'SCN_13') {
+      // Allow scroll in SCN_13 until the scene ends (loopProgress = 1.0)
+      if (loopProgress >= 0.99) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = 'auto';
+      }
     } else {
       document.body.style.overflow = 'auto';
     }
@@ -69,7 +120,7 @@ export default function Overlay() {
     return () => {
       document.body.style.overflow = 'auto';
     };
-  }, [currentScene, hingePhase, transitProgress, approachProgress, footfallProgress]);
+  }, [currentScene, hingePhase, transitProgress, approachProgress, footfallProgress, rainProgress, awakeningProgress, lightsProgress, reflectionProgress, loopProgress]);
 
   // Track page scroll to transition into SCN_04
   useEffect(() => {
@@ -219,6 +270,253 @@ export default function Overlay() {
     };
   }, [currentScene, setFootfallProgress]);
 
+  // Auto-transition from SCN_07 to SCN_09 when footfall is complete (at black screen)
+  useEffect(() => {
+    if (currentScene === 'SCN_07' && footfallProgress >= 0.99) {
+      const timer = setTimeout(() => {
+        footfallSynth.stop();
+        setCurrentScene('SCN_09');
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentScene, footfallProgress, setCurrentScene]);
+
+  // Track page scroll for SCN_09 The First Rain
+  useEffect(() => {
+    if (currentScene !== 'SCN_09') {
+      rainSynth.stop();
+      return;
+    }
+
+    // Reset page scroll to top so they can scroll down to rain
+    window.scrollTo(0, 0);
+    setRainProgress(0.0);
+    
+    // Start procedural rain synthesizer
+    rainSynth.start();
+
+    const handleRainScroll = () => {
+      const y = window.scrollY;
+      const limit = document.documentElement.scrollHeight - window.innerHeight;
+      const fraction = limit > 0 ? y / limit : 0;
+      
+      const boundedFraction = Math.min(1.0, fraction);
+      setRainProgress(boundedFraction);
+
+      // Modulate sound based on scroll progress
+      rainSynth.update(boundedFraction);
+    };
+
+    window.addEventListener('scroll', handleRainScroll, { passive: true });
+    handleRainScroll(); // Run immediately
+
+    return () => {
+      window.removeEventListener('scroll', handleRainScroll);
+      rainSynth.stop();
+    };
+  }, [currentScene, setRainProgress]);
+
+  // Auto-transition from SCN_09 to SCN_10 when rain is complete (at black screen)
+  useEffect(() => {
+    if (currentScene === 'SCN_09' && rainProgress >= 0.99) {
+      const timer = setTimeout(() => {
+        rainSynth.stop();
+        setCurrentScene('SCN_10');
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentScene, rainProgress, setCurrentScene]);
+
+  // Track page scroll for SCN_10 Azure Awakening
+  useEffect(() => {
+    if (currentScene !== 'SCN_10') {
+      awakeningSynth.stop();
+      return;
+    }
+
+    // Reset page scroll to top so they can scroll down to terraform
+    window.scrollTo(0, 0);
+    setAwakeningProgress(0.0);
+    
+    // Start procedural orchestral synthesizer
+    awakeningSynth.start();
+
+    const handleAwakeningScroll = () => {
+      const y = window.scrollY;
+      const limit = document.documentElement.scrollHeight - window.innerHeight;
+      const fraction = limit > 0 ? y / limit : 0;
+      
+      const boundedFraction = Math.min(1.0, fraction);
+      setAwakeningProgress(boundedFraction);
+
+      // Modulate sound based on scroll progress
+      awakeningSynth.update(boundedFraction);
+    };
+
+    window.addEventListener('scroll', handleAwakeningScroll, { passive: true });
+    handleAwakeningScroll(); // Run immediately
+
+    return () => {
+      window.removeEventListener('scroll', handleAwakeningScroll);
+      awakeningSynth.stop();
+    };
+  }, [currentScene, setAwakeningProgress]);
+
+  // Auto-transition from SCN_10 to SCN_11 when awakening is complete (at black screen)
+  useEffect(() => {
+    if (currentScene === 'SCN_10' && awakeningProgress >= 0.99) {
+      const timer = setTimeout(() => {
+        awakeningSynth.stop();
+        setCurrentScene('SCN_11');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentScene, awakeningProgress, setCurrentScene]);
+
+  // Track page scroll for SCN_11 First Lights
+  useEffect(() => {
+    if (currentScene !== 'SCN_11') {
+      lightsSynth.stop();
+      return;
+    }
+
+    // Reset page scroll to top so they can scroll down to light cities
+    window.scrollTo(0, 0);
+    setLightsProgress(0.0);
+    
+    // Start procedural piano/lights synthesizer
+    lightsSynth.start();
+
+    const handleLightsScroll = () => {
+      const y = window.scrollY;
+      const limit = document.documentElement.scrollHeight - window.innerHeight;
+      const fraction = limit > 0 ? y / limit : 0;
+      
+      const boundedFraction = Math.min(1.0, fraction);
+      setLightsProgress(boundedFraction);
+
+      // Modulate sound based on scroll progress
+      lightsSynth.update(boundedFraction);
+    };
+
+    window.addEventListener('scroll', handleLightsScroll, { passive: true });
+    handleLightsScroll(); // Run immediately
+
+    return () => {
+      window.removeEventListener('scroll', handleLightsScroll);
+      lightsSynth.stop();
+    };
+  }, [currentScene, setLightsProgress]);
+
+  // Auto-transition from SCN_11 to SCN_12 when lights are complete (at black screen)
+  useEffect(() => {
+    if (currentScene === 'SCN_11' && lightsProgress >= 0.99) {
+      const timer = setTimeout(() => {
+        lightsSynth.stop();
+        setCurrentScene('SCN_12');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentScene, lightsProgress, setCurrentScene]);
+
+  // Track page scroll for SCN_12 Twin Reflection
+  useEffect(() => {
+    if (currentScene !== 'SCN_12') {
+      reflectionSynth.stop();
+      return;
+    }
+
+    // Reset page scroll to top so they can scroll down to reflect
+    window.scrollTo(0, 0);
+    setReflectionProgress(0.0);
+    
+    // Start procedural reflection synthesizer
+    reflectionSynth.start();
+
+    const handleReflectionScroll = () => {
+      const y = window.scrollY;
+      const limit = document.documentElement.scrollHeight - window.innerHeight;
+      const fraction = limit > 0 ? y / limit : 0;
+      
+      const boundedFraction = Math.min(1.0, fraction);
+      setReflectionProgress(boundedFraction);
+
+      // Modulate sound based on scroll progress
+      reflectionSynth.update(boundedFraction);
+    };
+
+    window.addEventListener('scroll', handleReflectionScroll, { passive: true });
+    handleReflectionScroll(); // Run immediately
+
+    return () => {
+      window.removeEventListener('scroll', handleReflectionScroll);
+      reflectionSynth.stop();
+    };
+  }, [currentScene, setReflectionProgress]);
+
+  // Auto-transition from SCN_12 to SCN_13 when reflection is complete (at black screen)
+  useEffect(() => {
+    if (currentScene === 'SCN_12' && reflectionProgress >= 0.99) {
+      const timer = setTimeout(() => {
+        reflectionSynth.stop();
+        setCurrentScene('SCN_13');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentScene, reflectionProgress, setCurrentScene]);
+
+  // Track page scroll for SCN_13 The Loop
+  useEffect(() => {
+    if (currentScene !== 'SCN_13') {
+      loopSynth.stop();
+      return;
+    }
+
+    // Reset page scroll to top so they can scroll down to loop
+    window.scrollTo(0, 0);
+    setLoopProgress(0.0);
+    
+    // Start procedural loop synthesizer
+    loopSynth.start();
+
+    const handleLoopScroll = () => {
+      const y = window.scrollY;
+      const limit = document.documentElement.scrollHeight - window.innerHeight;
+      const fraction = limit > 0 ? y / limit : 0;
+      
+      const boundedFraction = Math.min(1.0, fraction);
+      setLoopProgress(boundedFraction);
+
+      // Modulate sound based on scroll progress
+      loopSynth.update(boundedFraction);
+    };
+
+    window.addEventListener('scroll', handleLoopScroll, { passive: true });
+    handleLoopScroll(); // Run immediately
+
+    return () => {
+      window.removeEventListener('scroll', handleLoopScroll);
+      loopSynth.stop();
+    };
+  }, [currentScene, setLoopProgress]);
+
+  // Track mouse coordinates for SCN_12 synchronized rotation
+  useEffect(() => {
+    if (currentScene !== 'SCN_12') return;
+
+    const handlePointerMove = (e: MouseEvent) => {
+      // Normalize to -1.0 to 1.0 range
+      const x = (e.clientX / window.innerWidth) * 2.0 - 1.0;
+      const y = (e.clientY / window.innerHeight) * 2.0 - 1.0;
+      setMousePosition({ x, y });
+    };
+
+    window.addEventListener('mousemove', handlePointerMove);
+    return () => {
+      window.removeEventListener('mousemove', handlePointerMove);
+    };
+  }, [currentScene, setMousePosition]);
+
   // Gesture down: Capture pointer and prepare tension audio
   const handlePointerDown = (e: React.PointerEvent) => {
     if (currentScene !== 'SCN_04' || hingePhase !== 'idle') return;
@@ -336,6 +634,64 @@ export default function Overlay() {
       // Fade to black at transition out
       overlayColor = '#000000';
       overlayOpacity = Math.min(1.0, (footfallProgress - 0.90) * 10.0);
+    }
+  } else if (currentScene === 'SCN_09') {
+    if (rainProgress < 0.15) {
+      // Fade out from black at start of rain scene
+      overlayColor = '#000000';
+      overlayOpacity = 1.0 - (rainProgress / 0.15);
+    } else if (rainProgress > 0.90) {
+      // Fade to black at end of scene
+      overlayColor = '#000000';
+      overlayOpacity = Math.min(1.0, (rainProgress - 0.90) * 10.0);
+    }
+  } else if (currentScene === 'SCN_10') {
+    if (awakeningProgress < 0.15) {
+      // Fade out from black at start of awakening scene
+      overlayColor = '#000000';
+      overlayOpacity = 1.0 - (awakeningProgress / 0.15);
+    } else if (awakeningProgress > 0.94) {
+      // Fade to black at end of scene (civilization lights hold)
+      overlayColor = '#000000';
+      overlayOpacity = Math.min(1.0, (awakeningProgress - 0.94) * 20.0);
+    }
+  } else if (currentScene === 'SCN_11') {
+    if (lightsProgress < 0.15) {
+      // Fade out from black at start of first lights scene
+      overlayColor = '#000000';
+      overlayOpacity = 1.0 - (lightsProgress / 0.15);
+    } else if (lightsProgress > 0.92) {
+      // Fade to black at end of scene (telemetry beacons hold)
+      overlayColor = '#000000';
+      overlayOpacity = Math.min(1.0, (lightsProgress - 0.92) * 15.0);
+    }
+  } else if (currentScene === 'SCN_12') {
+    if (reflectionProgress < 0.15) {
+      // Fade out from black at start of reflection scene
+      overlayColor = '#000000';
+      overlayOpacity = 1.0 - (reflectionProgress / 0.15);
+    } else if (reflectionProgress > 0.95) {
+      // Fade to black at end of scene
+      overlayColor = '#000000';
+      overlayOpacity = Math.min(1.0, (reflectionProgress - 0.95) * 20.0);
+    }
+  } else if (currentScene === 'SCN_13') {
+    if (loopProgress < 0.15) {
+      // Fade out from black at start of loop scene
+      overlayColor = '#000000';
+      overlayOpacity = 1.0 - (loopProgress / 0.15);
+    } else if (loopProgress >= 0.77 && loopProgress <= 0.84) {
+      // Stage 5 descent: White light dissolve
+      overlayColor = '#ffffff';
+      overlayOpacity = (loopProgress - 0.77) / 0.04;
+    } else if (loopProgress > 0.84 && loopProgress < 0.90) {
+      // Stage 6 reveal: White out fades to reveal eye
+      overlayColor = '#ffffff';
+      overlayOpacity = 1.0 - (loopProgress - 0.84) / 0.05;
+    } else if (loopProgress > 0.96) {
+      // Climax fade out to black
+      overlayColor = '#000000';
+      overlayOpacity = Math.min(1.0, (loopProgress - 0.96) * 25.0);
     }
   }
 
@@ -482,6 +838,108 @@ export default function Overlay() {
         >
           <div className="footfall-scene-label">SCN_07 — FIRST FOOTFALL</div>
         </div>
+      )}
+
+      {/* SCN_09 HUD: MINIMALIST THE FIRST RAIN */}
+      {currentScene === 'SCN_09' && (
+        <div 
+          className="rain-hud-layer" 
+          style={{ 
+            opacity: rainProgress > 0.12 && rainProgress < 0.88 ? 1.0 : 0.0, 
+            transition: 'opacity 0.8s ease-in-out' 
+          }}
+        >
+          <div className="rain-scene-label">SCN_09 — THE FIRST RAIN</div>
+        </div>
+      )}
+
+      {/* SCN_10 HUD: MINIMALIST AZURE AWAKENING */}
+      {currentScene === 'SCN_10' && (
+        <div 
+          className="awakening-hud-layer" 
+          style={{ 
+            opacity: awakeningProgress > 0.12 && awakeningProgress < 0.93 ? 1.0 : 0.0, 
+            transition: 'opacity 0.8s ease-in-out' 
+          }}
+        >
+          <div className="awakening-scene-label">SCN_10 — AZURE AWAKENING</div>
+        </div>
+      )}
+
+      {/* SCN_11 HUD: MINIMALIST FIRST LIGHTS */}
+      {currentScene === 'SCN_11' && (
+        <div 
+          className="lights-hud-layer" 
+          style={{ 
+            opacity: lightsProgress > 0.12 && lightsProgress < 0.90 ? 1.0 : 0.0, 
+            transition: 'opacity 0.8s ease-in-out' 
+          }}
+        >
+          <div className="lights-scene-label">SCN_11 — FIRST LIGHTS</div>
+        </div>
+      )}
+
+      {/* SCN_12 HUD: MINIMALIST TWIN REFLECTION */}
+      {currentScene === 'SCN_12' && (
+        <>
+          <div 
+            className="reflection-hud-layer" 
+            style={{ 
+              opacity: reflectionProgress > 0.12 && reflectionProgress < 0.98 ? 1.0 : 0.0, 
+              transition: 'opacity 0.8s ease-in-out' 
+            }}
+          >
+            <div className="reflection-scene-label">SCN_12 — TWIN REFLECTION</div>
+          </div>
+
+          {/* SCN_12 Subtitle Dialogues */}
+          <div className="climax-subtitles-container">
+            {/* Quote 1: 68% to 98% scroll */}
+            <div className={`climax-subtitle-text ${reflectionProgress >= 0.68 && reflectionProgress < 0.98 ? 'visible' : ''}`}>
+              We began as wanderers.<br />
+              We looked at the sky and saw a destination.<br />
+              Now, we look at the sky and see home.
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* SCN_13 HUD: THE LOOP */}
+      {currentScene === 'SCN_13' && (
+        <>
+          {/* Subtle text thought fragments (Stage 3) */}
+          <div className="climax-subtitles-container">
+            {/* Thought 1: 28% to 42% scroll */}
+            <div className={`climax-subtitle-text ${loopProgress >= 0.26 && loopProgress < 0.43 ? 'visible' : ''}`}>
+              How many worlds remain unseen?
+            </div>
+
+            {/* Thought 2: 45% to 58% scroll */}
+            <div className={`climax-subtitle-text ${loopProgress >= 0.45 && loopProgress < 0.62 ? 'visible' : ''}`}>
+              What becomes of a species that no longer fears distance?
+            </div>
+
+            {/* Thought 3: 64% to 75% scroll */}
+            <div className={`climax-subtitle-text ${loopProgress >= 0.64 && loopProgress < 0.77 ? 'visible' : ''}`}>
+              What waits beyond the next horizon?
+            </div>
+
+            {/* Final Title Card: 90% onwards */}
+            <div className={`climax-subtitle-text ${loopProgress >= 0.90 ? 'visible' : ''}`} style={{ fontSize: '3.0rem', letterSpacing: '0.5em', fontWeight: 300, transition: 'opacity 2.5s ease-in-out, transform 2.5s ease-in-out' }}>
+              GENESIS
+            </div>
+
+            {/* Restart Button: 95% onwards */}
+            <button 
+              className={`restart-btn ${loopProgress >= 0.94 ? 'visible' : ''}`}
+              onClick={() => {
+                window.location.reload();
+              }}
+            >
+              Restart Journey
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
